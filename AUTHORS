@@ -33,3 +33,4 @@ Thanks to
     * RobertGawron for a patch to the Highlighter.
     * Simon Willison (simonw) for various proposals and patches.
     * Ben Firshman (bfirsh) for faceting improvements and suggestions.
+    * Xavier Grangier (xgdlm) for a patch (and debugging help) related to import errors on server startup.

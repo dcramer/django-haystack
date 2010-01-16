@@ -1,6 +1,7 @@
 import inspect
 import logging
 import os
+import sys
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from haystack.sites import site
@@ -113,19 +114,20 @@ def handle_registrations(*args, **kwargs):
         # part to make things work.
         return
     
-    # This is a little dirty but we need to run the code that follows only
-    # once, no matter how many times the main Haystack module is imported.
-    # We'll look through the stack to see if we appear anywhere and simply
-    # return if we do, allowing the original call to finish.
-    stack = inspect.stack()
+    found_module = False
+    modules = sys.modules.keys()
+    siteconf_module = settings.HAYSTACK_SITECONF
     
-    for stack_info in stack[1:]:
-        if 'handle_registrations' in stack_info[3]:
-            return
+    for mod in modules:
+        # Check if siteconf has been loaded.
+        if siteconf_module in mod:
+            found_module = True
+            break
     
-    # Pull in the config file, causing any SearchSite initialization code to
-    # execute.
-    search_sites_conf = __import__(settings.HAYSTACK_SITECONF)
+    if not found_module:
+        # Pull in the config file, causing any SearchSite initialization code to
+        # execute.
+        search_sites_conf = __import__(settings.HAYSTACK_SITECONF)
 
 
 handle_registrations()
