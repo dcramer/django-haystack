@@ -69,6 +69,7 @@ def handle_registrations(*args, **kwargs):
     This makes it possible for scripts/management commands that affect models
     but know nothing of Haystack to keep the index up to date.
     """
+    print "In handle_registrations."
     if not getattr(settings, 'HAYSTACK_ENABLE_REGISTRATIONS', True):
         # If the user really wants to disable this, they can, possibly at their
         # own expense. This is generally only required in cases where other
@@ -78,15 +79,16 @@ def handle_registrations(*args, **kwargs):
     
     found_module = False
     modules = sys.modules.keys()
-    siteconf_module = settings.HAYSTACK_SITECONF
+    siteconf_module = 'haystack.indexes' # settings.HAYSTACK_SITECONF
     
     for mod in modules:
         # Check if siteconf has been loaded.
-        if siteconf_module in mod:
+        if siteconf_module in mod or settings.HAYSTACK_SITECONF in mod:
             found_module = True
             break
     
     if not found_module:
+        print "Importing siteconf."
         # Pull in the config file, causing any SearchSite initialization code to
         # execute.
         search_sites_conf = __import__(settings.HAYSTACK_SITECONF)
